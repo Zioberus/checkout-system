@@ -1,0 +1,17 @@
+[33mcommit 2ecc83ab87735d3ba2952751d732f04100b4aaa7[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature/product-repository[m[33m)[m
+Author: Zioberus <Daniel.ziobron@icloud.com>
+Date:   Sat Mar 21 01:35:45 2026 +0100
+
+    add special price enitity and fix product column constraints
+
+[33mcommit 4f19d6f25ed339a51b87605df70f675ccf80bf16[m[33m ([m[1;31morigin/feature/product-repository[m[33m)[m
+Author: Zioberus <Daniel.ziobron@icloud.com>
+Date:   Sat Mar 21 01:09:41 2026 +0100
+
+    add product repository
+
+[33mcommit 00e5aec934d8655e287374ad9c83c0899dbda5cf[m[33m ([m[1;31morigin/main[m[33m, [m[1;32mmain[m[33m)[m
+Author: Zioberus <Daniel.ziobron@icloud.com>
+Date:   Sat Mar 21 00:46:59 2026 +0100
+
+    init project with DB and spring boot
