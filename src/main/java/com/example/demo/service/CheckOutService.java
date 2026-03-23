@@ -30,15 +30,15 @@ public class CheckOutService {
            if(product.isEmpty()){
                throw new NoSuchElementException("Product not found");
            }
-           Product temp = product.get();
+           Product tempProduct = product.get();
            Optional<SpecialPrice>specialPrice = specialPriceRepo.findByProductItem(quantity.getKey());
            if(specialPrice.isEmpty()){
                //Normal price
-               BigDecimal normalPrice = temp.getNormalPrice();
+               BigDecimal normalPrice = tempProduct.getNormalPrice();
                finalPrice = finalPrice.add(normalPrice.multiply(BigDecimal.valueOf(quantity.getValue())));
            }
            else{
-               BigDecimal normalPrice = temp.getNormalPrice();
+               BigDecimal normalPrice = tempProduct.getNormalPrice();
                SpecialPrice tempSpecialPrice = specialPrice.get();
                int requiredQuantity = tempSpecialPrice.getRequiredQuantity();
                BigDecimal salePrice = tempSpecialPrice.getSpecialPrice();
