@@ -4,7 +4,6 @@ import com.example.demo.model.Product;
 import com.example.demo.model.SpecialPrice;
 import com.example.demo.repository.ProductRepository;
 import com.example.demo.repository.SpecialPriceRepository;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -12,9 +11,14 @@ import java.util.*;
 
 
 @Service
-public class CheckOutService {
+public class CheckoutService {
     ProductRepository productRepo;
     SpecialPriceRepository specialPriceRepo;
+
+    public CheckoutService(ProductRepository productRepo, SpecialPriceRepository specialPriceRepo){
+        this.productRepo = productRepo;
+        this.specialPriceRepo = specialPriceRepo;
+    }
 
     public  BigDecimal countFinalPrice(List<String> scannedProducts){
         BigDecimal finalPrice = BigDecimal.ZERO;
@@ -32,11 +36,12 @@ public class CheckOutService {
            }
            Product tempProduct = product.get();
            Optional<SpecialPrice>specialPrice = specialPriceRepo.findByProductItem(quantity.getKey());
+           //Normal Price
            if(specialPrice.isEmpty()){
-               //Normal price
                BigDecimal normalPrice = tempProduct.getNormalPrice();
                finalPrice = finalPrice.add(normalPrice.multiply(BigDecimal.valueOf(quantity.getValue())));
            }
+           //Special Price
            else{
                BigDecimal normalPrice = tempProduct.getNormalPrice();
                SpecialPrice tempSpecialPrice = specialPrice.get();
@@ -44,7 +49,7 @@ public class CheckOutService {
                BigDecimal salePrice = tempSpecialPrice.getSpecialPrice();
                int quanititySale = quantity.getValue()/requiredQuantity;
                int leftItems = quantity.getValue()%requiredQuantity;
-               finalPrice = finalPrice.add(salePrice.multiply(BigDecimal.valueOf(quanititySale)).add(normalPrice.multiply(BigDecimal.valueOf(leftItems))));
+               finalPrice = finalPrice.add(salePrice.multiply(BigDecimal.valueOf(quanititySale*requiredQuantity)).add(normalPrice.multiply(BigDecimal.valueOf(leftItems))));
 
            }
         }
