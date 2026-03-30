@@ -1,0 +1,10 @@
+DELETE FROM special_price;
+DELETE FROM product;
+INSERT INTO product (item, normal_price) VALUES ('A', 40);
+INSERT INTO product (item, normal_price) VALUES ('B', 10);
+INSERT INTO product (item, normal_price) VALUES ('C', 30);
+INSERT INTO product (item, normal_price) VALUES ('D', 25);
+INSERT INTO special_price (product_item, required_quantity, special_price) VALUES ('A', 3, 30);
+INSERT INTO special_price (product_item, required_quantity, special_price) VALUES ('B', 2, 7.5);
+INSERT INTO special_price (product_item, required_quantity, special_price) VALUES ('C', 4, 20);
+INSERT INTO special_price (product_item, required_quantity, special_price) VALUES ('D', 2, 23.5);

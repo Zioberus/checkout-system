@@ -21,11 +21,11 @@ public class CheckoutService {
     }
 
     /**
-     * STRATEGIA
+     * STRATEGIA:
      * Liczy końcową cenę produktów, uwzględniając:
-     * - promocje parowe (A/B z C/D)
-     * - promocje ilościowe (special price przy zakupie określonej liczby sztuk)
-     * - pozostałe produkty normalnie
+     * promocje parowe (A/B z C/D)
+     * promocje ilościowe (special price przy zakupie określonej liczby sztuk)
+     * pozostałe produkty normalnie
      */
     public BigDecimal countFinalPrice(List<String> scannedItems) {
 
@@ -50,16 +50,14 @@ public class CheckoutService {
                 leftovers.add(item);
             }
         }
-
         // Ile par da się zrobić
         int numPairs = Math.min(
                 countAB.values().stream().mapToInt(Integer::intValue).sum(),
                 countCD.values().stream().mapToInt(Integer::intValue).sum()
         );
-
+// wybieramy po jednym produkcie z każdej grupy
         while (numPairs > 0) {
 
-            // wybieramy po jednym produkcie z każdej grupy
             String itemA = null;
             for (Map.Entry<String, Integer> e : countAB.entrySet()) {
                 if (e.getValue() > 0) {
@@ -67,7 +65,6 @@ public class CheckoutService {
                     break;
                 }
             }
-
             String itemB = null;
             for (Map.Entry<String, Integer> e : countCD.entrySet()) {
                 if (e.getValue() > 0) {
@@ -75,16 +72,13 @@ public class CheckoutService {
                     break;
                 }
             }
-
             // pobieramy produkty z repo
             String currentItemA = itemA;
             String currentItemB = itemB;
-
             Product prodA = productRepo.findByItem(currentItemA)
                     .orElseThrow(() -> new NoSuchElementException("Brak produktu " + currentItemA));
             Product prodB = productRepo.findByItem(currentItemB)
                     .orElseThrow(() -> new NoSuchElementException("Brak produktu " + currentItemB));
-
             // cena specjalna jeśli jest dostępna
             BigDecimal priceA = specialPriceRepo.findByProductItem(itemA)
                     .map(SpecialPrice::getSpecialPrice)
@@ -92,57 +86,48 @@ public class CheckoutService {
             BigDecimal priceB = specialPriceRepo.findByProductItem(itemB)
                     .map(SpecialPrice::getSpecialPrice)
                     .orElse(prodB.getNormalPrice());
-
             totalCost = totalCost.add(priceA).add(priceB);
+
 
             // zmniejszamy liczbę dostępnych produktów
             countAB.put(itemA, countAB.get(itemA) - 1);
             countCD.put(itemB, countCD.get(itemB) - 1);
-
             numPairs--;
+
         }
+
         // Teraz liczymy pozostałe produkty (ilościowe promocje i normalne ceny)
         Map<String, Integer> remainingProducts = new HashMap<>();
-
         // reszta z grup AB
         for (Map.Entry<String, Integer> e : countAB.entrySet()) {
             if (e.getValue() > 0) remainingProducts.put(e.getKey(), e.getValue());
         }
-
         // reszta z grup CD
         for (Map.Entry<String, Integer> e : countCD.entrySet()) {
             if (e.getValue() > 0) remainingProducts.put(e.getKey(), e.getValue());
         }
-
         // produkty spoza par
         for (String item : leftovers) {
             remainingProducts.put(item, remainingProducts.getOrDefault(item, 0) + 1);
         }
-
         // liczymy cenę z promocją ilościową
         for (Map.Entry<String, Integer> entry : remainingProducts.entrySet()) {
-
             Product prod = productRepo.findByItem(entry.getKey())
                     .orElseThrow(() -> new NoSuchElementException("Produkt nie znaleziony: " + entry.getKey()));
             int qty = entry.getValue();
-
             Optional<SpecialPrice> spOpt = specialPriceRepo.findByProductItem(entry.getKey());
-
             if (spOpt.isPresent()) {
                 SpecialPrice sp = spOpt.get();
                 int sets = qty / sp.getRequiredQuantity();
                 int remainder = qty % sp.getRequiredQuantity();
-
                 BigDecimal setCost = sp.getSpecialPrice().multiply(BigDecimal.valueOf(sets));
                 BigDecimal remainingCost = prod.getNormalPrice().multiply(BigDecimal.valueOf(remainder));
-
                 totalCost = totalCost.add(setCost).add(remainingCost);
             } else {
                 // brak promocji, normalna cena
                 totalCost = totalCost.add(prod.getNormalPrice().multiply(BigDecimal.valueOf(qty)));
             }
         }
-
         return totalCost;
     }
 }
