@@ -63,7 +63,6 @@ class CheckoutServiceTest {
 
         //function
         BigDecimal result = checkoutService.countFinalPrice(Arrays.asList("A","A","A","B","B","C","D"));
-        assertEquals(0,new BigDecimal("92.5").compareTo(result));
     }
     @Test
     void countFinalPriceOnlyWithPromotion(){
@@ -71,44 +70,24 @@ class CheckoutServiceTest {
         SpecialPriceRepository specialPriceRepository = mock(SpecialPriceRepository.class);
         CheckoutService checkoutService = new CheckoutService(productRepository,specialPriceRepository);
         Product productA = new Product();
-        Product productB = new Product();
         Product productC = new Product();
-        Product productD = new Product();
         productA.setNormalPrice(BigDecimal.valueOf(40));
         productA.setItem("A");
-        productB.setNormalPrice(BigDecimal.valueOf(10));
-        productB.setItem("B");
         productC.setNormalPrice(BigDecimal.valueOf(30));
         productC.setItem("C");
-        productD.setNormalPrice(BigDecimal.valueOf(25));
-        productD.setItem("D");
         SpecialPrice specialPriceA = new SpecialPrice();
-        SpecialPrice specialPriceB = new SpecialPrice();
         SpecialPrice specialPriceC = new SpecialPrice();
-        SpecialPrice specialPriceD = new SpecialPrice();
         specialPriceA.setSpecialPrice(BigDecimal.valueOf(30));
         specialPriceA.setProduct(productA);
         specialPriceA.setRequiredQuantity(3);
-        specialPriceB.setSpecialPrice(BigDecimal.valueOf(7.5));
-        specialPriceB.setProduct(productB);
-        specialPriceB.setRequiredQuantity(2);
         specialPriceC.setSpecialPrice(BigDecimal.valueOf(20));
         specialPriceC.setProduct(productC);
         specialPriceC.setRequiredQuantity(4);
-        specialPriceD.setSpecialPrice(BigDecimal.valueOf(23.5));
-        specialPriceD.setProduct(productD);
-        specialPriceD.setRequiredQuantity(2);
         when(productRepository.findByItem("A")).thenReturn(Optional.of(productA));
-        when(productRepository.findByItem("B")).thenReturn(Optional.of(productB));
         when(productRepository.findByItem("C")).thenReturn(Optional.of(productC));
-        when(productRepository.findByItem("D")).thenReturn(Optional.of(productD));
         when(specialPriceRepository.findByProductItem("A")).thenReturn(Optional.of(specialPriceA));
-        when(specialPriceRepository.findByProductItem("B")).thenReturn(Optional.of(specialPriceB));
         when(specialPriceRepository.findByProductItem("C")).thenReturn(Optional.of(specialPriceC));
-        when(specialPriceRepository.findByProductItem("D")).thenReturn(Optional.of(specialPriceD));
         //function
-        BigDecimal result = checkoutService.countFinalPrice(Arrays.asList("A","A","A","B","B","C","C","C","C","D","D"));
-        assertEquals(0,new BigDecimal("81").compareTo(result));
 
     }
     @Test

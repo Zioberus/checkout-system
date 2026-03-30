@@ -47,11 +47,9 @@ public class CheckoutService {
                SpecialPrice tempSpecialPrice = specialPrice.get();
                int requiredQuantity = tempSpecialPrice.getRequiredQuantity();
                BigDecimal salePrice = tempSpecialPrice.getSpecialPrice();
-               int quantitySale = quantity.getValue()/requiredQuantity;
+               int quanititySale = quantity.getValue()/requiredQuantity;
                int leftItems = quantity.getValue()%requiredQuantity;
-               finalPrice = finalPrice.add(
-                       salePrice.multiply(BigDecimal.valueOf(quantitySale)).add(normalPrice.multiply(BigDecimal.valueOf(leftItems)))
-               );
+               finalPrice = finalPrice.add(salePrice.multiply(BigDecimal.valueOf(quanititySale*requiredQuantity)).add(normalPrice.multiply(BigDecimal.valueOf(leftItems))));
 
            }
         }
